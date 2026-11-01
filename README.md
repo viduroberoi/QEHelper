@@ -16,6 +16,10 @@ qe-helper testcases --input-file requirements/password-reset.md
 
 The command writes Markdown to standard output. Save it with `--output` if desired. Requirement input can be supplied inline with `--requirement` or from a UTF-8 `.txt`/`.md` file with `--input-file`; the two options are mutually exclusive.
 
+## Quality workflow
+
+Every artifact runs through a three-node LangGraph workflow: **generate → review → revise**. The reviewer compares the draft against the supplied requirement, lists missing coverage and concrete fixes, and the revision node incorporates applicable fixes into the final Markdown. The default `review` and `revise` prompts live alongside the artifact prompts in the YAML configuration, so you can tune the review standard without editing Python.
+
 ## Configuration
 
 The default prompts are in `src/qehelper/config/prompts.yaml`. Copy and edit them for project-specific terminology:

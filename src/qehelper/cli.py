@@ -61,7 +61,7 @@ def main() -> None:
     except argparse.ArgumentTypeError as error:
         parser.error(str(error))
     model = create_model(prompts, args.provider, args.model, args.command_profile)
-    artifact = run_workflow(model, prompts[args.command], requirement)
+    artifact = run_workflow(model, prompts, args.command, requirement)
     if args.output:
         args.output.write_text(artifact + "\n", encoding="utf-8")
         print(f"Created {args.output}")

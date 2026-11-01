@@ -5,7 +5,7 @@ from pathlib import Path
 
 import yaml
 
-REQUIRED_PROMPTS = {"testcases", "testplan"}
+REQUIRED_PROMPTS = {"testcases", "testplan", "review", "revise"}
 
 
 def load_prompts(config_path: Path | None = None) -> dict[str, str]:

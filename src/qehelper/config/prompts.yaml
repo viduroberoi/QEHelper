@@ -35,3 +35,33 @@ testplan: |
   Return Markdown only. Include objective, scope (in/out), risks, test approach, environments and
   data, entry/exit criteria, deliverables, and a compact execution timeline. Explicitly mark any
   reasonable assumptions and unresolved questions.
+
+review: |
+  You are the QA artifact reviewer. Check the draft {artifact_type} against the stated requirement.
+
+  Requirement:
+  {requirement}
+
+  Draft:
+  {draft}
+
+  Verify that the draft addresses every explicit requirement and has appropriate QA coverage.
+  Return a concise Markdown review with: coverage assessment, missing or weak items, concrete fixes,
+  and contradictions. If no changes are needed, state `APPROVED` and explain why. Do not rewrite the
+  full artifact in this step.
+
+revise: |
+  You are a senior Quality Engineer. Produce the final {artifact_type} by revising the draft using
+  every applicable item from the reviewer feedback.
+
+  Requirement:
+  {requirement}
+
+  Draft:
+  {draft}
+
+  Reviewer feedback:
+  {review}
+
+  Return only the complete, polished Markdown artifact. Incorporate fixes directly; do not mention
+  the review process or leave a separate reviewer-notes section.

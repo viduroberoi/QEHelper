@@ -7,15 +7,27 @@ class FakeResponse:
 
 class FakeModel:
     def __init__(self) -> None:
-        self.prompt = ""
+        self.prompts: list[str] = []
+        self.responses = iter(["# Draft", "Add a negative test", "# Revised artifact"])
 
     def invoke(self, prompt: str) -> FakeResponse:
-        self.prompt = prompt
-        return FakeResponse()
+        self.prompts.append(prompt)
+        response = FakeResponse()
+        response.content = next(self.responses)
+        return response
 
 
 def test_workflow_formats_requirement_and_returns_model_content() -> None:
     model = FakeModel()
-    actual = run_workflow(model, "Assess: {requirement}", "Password reset")
-    assert actual == "# Test cases"
-    assert model.prompt == "Assess: Password reset"
+    prompts = {
+        "testcases": "Create: {requirement}",
+        "review": "Review {artifact_type}: {requirement}; draft={draft}",
+        "revise": "Revise {artifact_type}: {requirement}; draft={draft}; review={review}",
+    }
+    actual = run_workflow(model, prompts, "testcases", "Password reset")
+    assert actual == "# Revised artifact"
+    assert model.prompts == [
+        "Create: Password reset",
+        "Review testcases: Password reset; draft=# Draft",
+        "Revise testcases: Password reset; draft=# Draft; review=Add a negative test",
+    ]
