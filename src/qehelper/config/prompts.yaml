@@ -12,8 +12,9 @@ commands:
     command: ["claude", "-p", "--output-format", "text", "{prompt}"]
     timeout_seconds: 180
   cursor:
-    # Deliberately omits --force: Cursor proposes changes but does not apply them.
-    command: ["cursor-agent", "-p", "--output-format", "text", "{prompt}"]
+    # Non-interactive runs need a trusted workspace. --force lets Cursor create
+    # the requested artifact without confirmation prompts; use only in trusted repos.
+    command: ["cursor-agent", "-p", "--trust", "--force", "--output-format", "text", "{prompt}"]
     timeout_seconds: 180
 
 testcases: |

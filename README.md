@@ -18,7 +18,7 @@ The command writes Markdown to standard output. Save it with `--output` if desir
 
 ## Quality workflow
 
-Every artifact runs through a three-node LangGraph workflow: **generate → review → revise**. The reviewer compares the draft against the supplied requirement, lists missing coverage and concrete fixes, and the revision node incorporates applicable fixes into the final Markdown. The default `review` and `revise` prompts live alongside the artifact prompts in the YAML configuration, so you can tune the review standard without editing Python.
+Every artifact runs through a three-node LangGraph workflow: **generate → review → revise**. The reviewer compares the draft against the supplied requirement, lists missing coverage and concrete fixes, and the revision node incorporates applicable fixes into the final Markdown. The default `review` and `revise` prompts live alongside the artifact prompts in the YAML configuration, so you can tune the review standard without editing Python. Each run makes three model/CLI calls, so expect roughly triple the latency and usage of a one-shot prompt.
 
 ## Configuration
 
@@ -76,6 +76,8 @@ cursor-agent login
 cursor-agent status
 ```
 
+If `cursor-agent` is not found but the Cursor desktop launcher is installed, run `cursor agent` once; recent Cursor installations use it to install the standalone terminal agent. Alternatively, install the Cursor Agent CLI using Cursor's official installation instructions.
+
 Then select the bundled `cursor` profile:
 
 ```bash
@@ -86,7 +88,7 @@ qe-helper testplan \
   --output artifacts/password-reset-test-plan.md
 ```
 
-The Cursor profile runs `cursor-agent -p --output-format text` and intentionally does **not** pass `--force`, so it does not authorize workspace edits.
+The bundled Cursor profile runs `cursor-agent -p --trust --force --output-format text`. `--trust` prevents a workspace-trust prompt, and `--force` allows the agent to create the requested artifact without confirmation prompts. Use this profile only in repositories you trust: Cursor can access and modify workspace files when instructed. QE Helper still directs Cursor to return Markdown and writes the resulting final artifact at the `--output` path.
 
 ### Customize a CLI profile
 
@@ -103,8 +105,15 @@ Every command profile must have a `command` list containing `{prompt}`. QE Helpe
 commands:
   my-local-assistant:
     command: ["my-assistant", "--print", "{prompt}"]
-    timeout_seconds: 180
+  timeout_seconds: 180
 ```
+
+### Troubleshooting local CLI runs
+
+- **`cursor-agent: command not found`** — install/log in to Cursor Agent, or run `cursor agent` from an installed Cursor desktop launcher once to bootstrap the terminal agent. Confirm with `cursor-agent status`.
+- **Workspace trust prompt** — the bundled `cursor` profile already passes `--trust`. If you use a copied older configuration, regenerate it with `qe-helper init-config --output qe-prompts.yaml` or add `--trust` to the profile manually.
+- **Long-running command** — one QE Helper request invokes the configured CLI three times (generate, review, revise). The default timeout is 180 seconds *per call*; increase `timeout_seconds` in your config for larger documents or slower models.
+- **`ModuleNotFoundError: qehelper`** — activate the project virtual environment and repair the editable install: `python -m pip install -e '.[dev]'`.
 
 ## Build a binary
 
