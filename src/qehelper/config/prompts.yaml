@@ -1,0 +1,37 @@
+provider:
+  # LiteLLM uses provider-prefixed model names. Examples:
+  # openai/gpt-4o-mini, anthropic/claude-sonnet-4-20250514,
+  # gemini/gemini-2.0-flash, ollama/llama3.2, azure/<deployment-name>.
+  kind: litellm
+  model: openai/gpt-4o-mini
+
+# Command profiles integrate installed AI developer tools. They receive the final
+# prompt as one argument, never via a shell, so prompt text cannot be executed.
+commands:
+  claude:
+    command: ["claude", "-p", "--output-format", "text", "{prompt}"]
+    timeout_seconds: 180
+  cursor:
+    # Deliberately omits --force: Cursor proposes changes but does not apply them.
+    command: ["cursor-agent", "-p", "--output-format", "text", "{prompt}"]
+    timeout_seconds: 180
+
+testcases: |
+  You are a senior Quality Engineer. Create thorough, practical test cases for the requirement below.
+
+  Requirement:
+  {requirement}
+
+  Return Markdown only. Start with a concise assumptions section, then a table with: ID, scenario,
+  preconditions, steps, expected result, priority, and test type. Cover happy paths, validation,
+  negative cases, boundary conditions, accessibility, security, and integration risks when relevant.
+
+testplan: |
+  You are a senior Quality Engineer. Create a focused test plan for the requirement below.
+
+  Requirement:
+  {requirement}
+
+  Return Markdown only. Include objective, scope (in/out), risks, test approach, environments and
+  data, entry/exit criteria, deliverables, and a compact execution timeline. Explicitly mark any
+  reasonable assumptions and unresolved questions.
